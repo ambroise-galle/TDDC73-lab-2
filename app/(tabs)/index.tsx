@@ -1,74 +1,200 @@
-import { Image, StyleSheet, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+// import { Picker } from '@react-native-picker/picker';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const CreditCardInput = () => {
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [expiryMonth, setExpiryMonth] = useState('');
+  const [expiryYear, setExpiryYear] = useState('');
+  const [cvv, setCvv] = useState('');
 
-export default function HomeScreen() {
+  const formatCardNumber = (number: string) => {
+    const formattedNumber = number.padEnd(16, '#');
+    return formattedNumber.match(/.{1,4}/g)?.join(' ') || '';
+  };
+
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+
+    <View style={styles.container}>
+      {/* Card Preview */}
+      <View style={styles.cardPreview}>
+        <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+        <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+        <Text style={styles.cardExpiry}>
+          {expiryMonth || 'MM'}/{expiryYear || 'YY'}
+        </Text>
+      </View>
+
+      {/* Input Fields */}
+      <View style={styles.inputCard}>
+        <Text style={styles.title}>Card Number</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          maxLength={16}
+          value={cardNumber}
+          onChangeText={setCardNumber}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12'
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+
+        <Text style={styles.title}>Card Holder</Text>
+        <TextInput
+          style={styles.input}
+          value={cardName}
+          onChangeText={setCardName}
+        />
+
+        {/* Expiry Date and CVV */}
+        <View style={styles.row}>
+          <View style={styles.col}>
+            <Text style={styles.title}>Expiration Date</Text>
+            <View style={styles.row}>
+              <TextInput
+                style={[styles.input, styles.inputSmall]}
+                value={expiryMonth}
+                onChangeText={setExpiryMonth}
+                maxLength={2}
+                placeholder="MM"
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[styles.input, styles.inputSmall]}
+                value={expiryYear}
+                onChangeText={setExpiryYear}
+                maxLength={2}
+                placeholder="YY"
+                keyboardType="numeric"
+              />
+            </View>
+          </View>
+          <View style={styles.col}>
+            <Text style={styles.title}>CVV</Text>
+            <TextInput
+              style={styles.input}
+              value={cvv}
+              onChangeText={setCvv}
+              maxLength={4}
+              keyboardType="numeric"
+            />
+          </View>
+        </View>
+        {/* Submit Button */}
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
+  container: {
+    backgroundColor: '#DAEEFE',
     alignItems: 'center',
-    gap: 8,
+    padding: '5%',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  cardPreview: {
+    display: 'flex',
+    width: '75%',
+    aspectRatio: 1.586,
+    backgroundColor: '#2b2d42',
+    borderRadius: 16,
+    padding: '4%',
+    justifyContent: 'space-between',
+    zIndex: 1,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  inputCard: {
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 'auto',
+    paddingTop: '20%',
+    paddingBottom: '10%',
+    position: 'relative',
+    top: '-12%',
+    zIndex: 0,
+  },
+  cardNumber: {
+    width: '100%',
+    color: 'white',
+    letterSpacing: 2,
+  },
+  cardHolder: {
+    color: 'white',
+    fontSize: 16,
+    textTransform: 'uppercase',
+  },
+  cardExpiry: {
+    color: 'white',
+    fontSize: 16,
+  },
+  input: {
+    width: '90%',
+    height: 50,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginVertical: 0,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  row: {
+    flexDirection: 'row',
+    marginLeft: '3%',
+  },
+  picker: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'transparent',
+    borderRadius: 8,
+    borderColor: '#ddd',
+  },
+  button: {
+    width: '90%',
+    height: 50,
+    backgroundColor: '#0056d6',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  inputPicker: {
+    width: '30%',
+    height: 50,
+    backgroundColor: 'white',
+    borderRadius: 8,
+    borderColor: '#ddd',
+  },
+  cvv: {
+    width: 80,
+    borderRadius: 8,
+    borderColor: '#ddd',
+    // Extremely hacky way to align the CVV input
+    height: 50,
+    marginLeft: "7%",
+  },
+  title: {
+    width: '90%',
+    textAlign: 'left',
+    fontSize: 12,
+    marginTop: 20,
+    marginBottom: 5,
+    color: 'black',
+  },
+  col: {
+    flex: 1,
+  },
+  inputSmall: {
+    width: 80,
+    marginRight: 10,
   },
 });
+
+export default CreditCardInput;
