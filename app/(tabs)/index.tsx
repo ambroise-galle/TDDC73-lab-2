@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
 // import { Picker } from '@react-native-picker/picker';
 
 const CreditCardInput = () => {
@@ -20,11 +20,19 @@ const CreditCardInput = () => {
     <View style={styles.container}>
       {/* Card Preview */}
       <View style={styles.cardPreview}>
-        <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-        <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-        <Text style={styles.cardExpiry}>
-          {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-        </Text>
+        <Image source = {require('../../assets/images/10.jpeg')} style={styles.cardBackground}/>
+        <View style={styles.cardInfosContainer}>
+          <View style={styles.logo}>
+            <Image source={require('../../assets/images/hologramme-cb.png')} style={styles.hologram}/>
+            <Image source={require('../../assets/images/unionpay.png')} style={styles.logoBank}/>
+          </View>
+          <View style={styles.cardInfos}></View>
+          <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+          <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+          <Text style={styles.cardExpiry}>
+            {expiryMonth || 'MM'}/{expiryYear || 'YY'}
+          </Text>
+        </View>
       </View>
 
       {/* Input Fields */}
@@ -103,6 +111,37 @@ const styles = StyleSheet.create({
     padding: '4%',
     justifyContent: 'space-between',
     zIndex: 1,
+    elevation: 20,
+    shadowColor: '#52006A',
+  },
+  cardBackground: {
+    position: 'absolute',
+    width: 540,
+    height: 341,
+    borderRadius: 16,
+    zIndex: 2,
+  },
+  logo: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  hologram: {
+    width: 70,
+    height: 80,
+    zIndex: 3,
+  },
+  logoBank: {
+    width: 90,
+    height: 50,
+    zIndex: 3,
+  },
+  cardInfosContainer: {
+    display: 'flex',
+    zIndex: 3,
+  },
+  cardInfos: {
+
   },
   inputCard: {
     width: '100%',
