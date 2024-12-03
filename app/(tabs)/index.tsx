@@ -26,12 +26,13 @@ const CreditCardInput = () => {
             <Image source={require('../../assets/images/hologramme-cb.png')} style={styles.hologram}/>
             <Image source={require('../../assets/images/unionpay.png')} style={styles.logoBank}/>
           </View>
-          <View style={styles.cardInfos}></View>
-          <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-          <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-          <Text style={styles.cardExpiry}>
-            {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-          </Text>
+          <View style={styles.cardInfos}>
+            <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+            <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+            <Text style={styles.cardExpiry}>
+              {expiryMonth || 'MM'}/{expiryYear || 'YY'}
+            </Text>
+          </View>
         </View>
       </View>
 
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2b2d42',
     borderRadius: 16,
     padding: '4%',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     zIndex: 1,
     elevation: 20,
     shadowColor: '#52006A',
@@ -138,10 +139,17 @@ const styles = StyleSheet.create({
   },
   cardInfosContainer: {
     display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
     zIndex: 3,
   },
   cardInfos: {
-
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    height: '70%',
+    zIndex: 3,
   },
   inputCard: {
     width: '100%',
@@ -159,6 +167,7 @@ const styles = StyleSheet.create({
     width: '100%',
     color: 'white',
     letterSpacing: 2,
+    marginTop: 35,
   },
   cardHolder: {
     color: 'white',
