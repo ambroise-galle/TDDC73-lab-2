@@ -84,6 +84,7 @@ const CreditCardInput = () => {
               value={cvv}
               onChangeText={setCvv}
               maxLength={4}
+              placeholder='***'
               keyboardType="numeric"
             />
           </View>
@@ -117,8 +118,8 @@ const styles = StyleSheet.create({
   },
   cardBackground: {
     position: 'absolute',
-    width: 540,
-    height: 341,
+    width: 253,
+    height: 160,
     borderRadius: 16,
     zIndex: 2,
   },
@@ -128,13 +129,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   hologram: {
-    width: 70,
-    height: 80,
+    width: 40,
+    height: 50,
     zIndex: 3,
   },
   logoBank: {
-    width: 90,
-    height: 50,
+    width: 80,
+    height: 40,
     zIndex: 3,
   },
   cardInfosContainer: {
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
     width: '100%',
     color: 'white',
     letterSpacing: 2,
-    marginTop: 35,
+    marginTop: 15,
   },
   cardHolder: {
     color: 'white',
@@ -189,7 +190,9 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   row: {
+    display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     marginLeft: '3%',
   },
   picker: {
