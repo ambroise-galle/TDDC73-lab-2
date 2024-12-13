@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 // import { Picker } from '@react-native-picker/picker';
 
 const CreditCardInput = () => {
@@ -17,84 +17,85 @@ const CreditCardInput = () => {
 
   return (
 
-    <View style={styles.container}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
       {/* Card Preview */}
-      <View style={styles.cardPreview}>
-        <Image source = {require('../../assets/images/10.jpeg')} style={styles.cardBackground}/>
-        <View style={styles.cardInfosContainer}>
-          <View style={styles.logo}>
-            <Image source={require('../../assets/images/hologramme-cb.png')} style={styles.hologram}/>
-            <Image source={require('../../assets/images/unionpay.png')} style={styles.logoBank}/>
-          </View>
-          <View style={styles.cardInfos}>
-            <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-            <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-            <Text style={styles.cardExpiry}>
-              {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-            </Text>
+        <View style={styles.cardPreview}>
+          <Image source = {require('../../assets/images/10.jpeg')} style={styles.cardBackground}/>
+          <View style={styles.cardInfosContainer}>
+            <View style={styles.logo}>
+              <Image source={require('../../assets/images/hologramme-cb.png')} style={styles.hologram}/>
+              <Image source={require('../../assets/images/unionpay.png')} style={styles.logoBank}/>
+            </View>
+            <View style={styles.cardInfos}>
+              <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+              <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+              <Text style={styles.cardExpiry}>
+                {expiryMonth || 'MM'}/{expiryYear || 'YY'}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-      {/* Input Fields */}
-      <View style={styles.inputCard}>
-        <Text style={styles.title}>Card Number</Text>
-        <TextInput
-          style={styles.input}
-          keyboardType="numeric"
-          maxLength={16}
-          value={cardNumber}
-          onChangeText={setCardNumber}
-        />
+        {/* Input Fields */}
+        <ScrollView style={styles.inputCard} contentContainerStyle={styles.scrollViewContent}>
+          <Text style={styles.title}>Card Number</Text>
+          <TextInput
+            style={styles.input}
+            keyboardType="numeric"
+            maxLength={16}
+            value={cardNumber}
+            onChangeText={setCardNumber}
+          />
 
-        <Text style={styles.title}>Card Holder</Text>
-        <TextInput
-          style={styles.input}
-          value={cardName}
-          onChangeText={setCardName}
-        />
+          <Text style={styles.title}>Card Holder</Text>
+          <TextInput
+            style={styles.input}
+            value={cardName}
+            onChangeText={setCardName}
+          />
 
-        {/* Expiry Date and CVV */}
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Text style={styles.title}>Expiration Date</Text>
-            <View style={styles.row}>
+          {/* Expiry Date and CVV */}
+          <View style={styles.row}>
+            <View style={styles.col}>
+              <Text style={styles.title}>Expiration Date</Text>
+              <View style={styles.row}>
+                <TextInput
+                  style={[styles.input, styles.inputSmall]}
+                  value={expiryMonth}
+                  onChangeText={setExpiryMonth}
+                  maxLength={2}
+                  placeholder="MM"
+                  keyboardType="numeric"
+                />
+                <TextInput
+                  style={[styles.input, styles.inputSmall]}
+                  value={expiryYear}
+                  onChangeText={setExpiryYear}
+                  maxLength={2}
+                  placeholder="YY"
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+            <View style={styles.spacer}></View>
+            <View style={styles.col}>
+              <Text style={styles.title}>CVV</Text>
               <TextInput
-                style={[styles.input, styles.inputSmall]}
-                value={expiryMonth}
-                onChangeText={setExpiryMonth}
-                maxLength={2}
-                placeholder="MM"
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={[styles.input, styles.inputSmall]}
-                value={expiryYear}
-                onChangeText={setExpiryYear}
-                maxLength={2}
-                placeholder="YY"
+                style={styles.input}
+                value={cvv}
+                onChangeText={setCvv}
+                maxLength={4}
+                placeholder='***'
                 keyboardType="numeric"
               />
             </View>
           </View>
-          <View style={styles.col}>
-            <Text style={styles.title}>CVV</Text>
-            <TextInput
-              style={styles.input}
-              value={cvv}
-              onChangeText={setCvv}
-              maxLength={4}
-              placeholder='***'
-              keyboardType="numeric"
-            />
-          </View>
-        </View>
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          {/* Submit Button */}
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Submit</Text>
+          </TouchableOpacity>
+        </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -154,7 +155,6 @@ const styles = StyleSheet.create({
   },
   inputCard: {
     width: '100%',
-    alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 'auto',
@@ -163,6 +163,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     top: '-12%',
     zIndex: 0,
+  },
+  scrollViewContent: {
+    alignItems: 'center',
   },
   cardNumber: {
     width: '100%',
@@ -227,7 +230,6 @@ const styles = StyleSheet.create({
     width: 80,
     borderRadius: 8,
     borderColor: '#ddd',
-    // Extremely hacky way to align the CVV input
     height: 50,
     marginLeft: "7%",
   },
@@ -245,6 +247,9 @@ const styles = StyleSheet.create({
   inputSmall: {
     width: 80,
     marginRight: 10,
+  },
+  spacer: {
+    paddingRight: 40,
   },
 });
 
