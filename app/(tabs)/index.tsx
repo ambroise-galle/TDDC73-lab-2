@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, ImageBackground } from 'react-native';
 // import { Picker } from '@react-native-picker/picker';
 
 const CreditCardInput = () => {
@@ -20,7 +20,7 @@ const CreditCardInput = () => {
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
       {/* Card Preview */}
         <View style={styles.cardPreview}>
-          <Image source = {require('../../assets/images/10.jpeg')} style={styles.cardBackground}/>
+          <ImageBackground source={require('../../assets/images/10.jpeg')} style={styles.cardBackground}>
           <View style={styles.cardInfosContainer}>
             <View style={styles.logo}>
               <Image source={require('../../assets/images/hologramme-cb.png')} style={styles.hologram}/>
@@ -34,6 +34,7 @@ const CreditCardInput = () => {
               </Text>
             </View>
           </View>
+          </ImageBackground>
         </View>
 
         {/* Input Fields */}
@@ -112,17 +113,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#2b2d42',
     borderRadius: 16,
     padding: '4%',
-    // justifyContent: 'space-between',
     zIndex: 1,
     elevation: 20,
     shadowColor: '#52006A',
+    overflow: 'hidden',
   },
   cardBackground: {
     position: 'absolute',
-    width: 253,
-    height: 160,
-    borderRadius: 16,
-    zIndex: 2,
+    flex: 1, 
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    top: 0,
+    bottom: 0,
+    right: 0,
+    left: 0,
   },
   logo: {
     display: 'flex',
@@ -144,6 +148,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     zIndex: 3,
+    padding: 15,
   },
   cardInfos: {
     display: 'flex',
