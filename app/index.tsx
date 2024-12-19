@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, ScrollView } from 'react-native';
+
 
 const CreditCard = () => {
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardName, setCardName] = useState('');
+  const [expiryMonth, setExpiryMonth] = useState('');
+  const [expiryYear, setExpiryYear] = useState('');
+  const [cvv, setCvv] = useState('');
+  const formatCardNumber = (number: string) => {
+    const formattedNumber = number.padEnd(16, '#');
+    return formattedNumber.match(/.{1,4}/g)?.join(' ') || '';
+  };
+
   const [flipped, setFlipped] = useState(false);
   const animatedValue = useState(new Animated.Value(0))[0];
   const opacityValue = useState(new Animated.Value(1))[0];
@@ -75,7 +86,7 @@ const CreditCard = () => {
         </View>
       </TouchableOpacity>
 
-      <ScrollView style={stylesInput.inputCard} contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>
         <Text style={stylesInput.title}>Card Number</Text>
         <TextInput
           style={stylesInput.input}
@@ -150,6 +161,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     width: 300,
     height: 200,
+    zIndex: 3,
   },
   card: {
     width: 300,
