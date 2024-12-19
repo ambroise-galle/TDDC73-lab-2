@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, ScrollView } from 'react-native';
+import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, Image, ImageBackground, ScrollView } from 'react-native';
+
+
 
 
 const CreditCard = () => {
@@ -73,15 +75,47 @@ const CreditCard = () => {
     transform: [{ rotateY: backInterpolate }],
   };
 
+  const CreditCardPreviewFront = () => {
+    return(
+      <View style={stylesInput.cardPreview}>
+        <ImageBackground source={require('../assets/images/10.jpeg')} style={stylesInput.cardBackground}>
+        <View style={stylesInput.cardInfosContainer}>
+          <View style={stylesInput.logo}>
+            <Image source={require('../assets/images/hologramme-cb.png')} style={stylesInput.hologram}/>
+            <Image source={require('../assets/images/unionpay.png')} style={stylesInput.logoBank}/>
+          </View>
+          <View style={stylesInput.cardInfos}>
+            <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+            <Text style={stylesInput.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+            <Text style={stylesInput.cardExpiry}>
+              {expiryMonth || 'MM'}/{expiryYear || 'YY'}
+            </Text>
+          </View>
+        </View>
+        </ImageBackground>
+      </View>
+  )}
+
+  const CreditCardPreviewBack = () => {
+    return(
+    <View style={stylesInput.cardPreview}>
+      <ImageBackground source={require('../assets/images/10.jpeg')} style={stylesInput.cardBackground}>
+        <View style={stylesInput.cardInfos}>
+          <Text style={stylesInput.cvv}>{cvv}</Text>
+        </View>
+      </ImageBackground>
+    </View>
+  )}
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={flipCard}>
         <View style={styles.cardContainer}>
           <Animated.View style={[styles.card, frontAnimatedStyle, styles.front, { opacity: opacityValue }]}>
-            <Text style={styles.text}>Front</Text>
+            <CreditCardPreviewFront/>
           </Animated.View>
           <Animated.View style={[styles.card, backAnimatedStyle, styles.back, { opacity: Animated.subtract(1, opacityValue) }]}>
-            <Text style={styles.text}>Back</Text>
+            <CreditCardPreviewBack/>
           </Animated.View>
         </View>
       </TouchableOpacity>
