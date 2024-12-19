@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Image, ImageBackground, ScrollView } from 'react-native';
-
-
-
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Image, ScrollView } from 'react-native';
 
 const CreditCard = () => {
   const [cardNumber, setCardNumber] = useState('');
@@ -10,19 +7,16 @@ const CreditCard = () => {
   const [expiryMonth, setExpiryMonth] = useState('');
   const [expiryYear, setExpiryYear] = useState('');
   const [cvv, setCvv] = useState('');
-  const formatCardNumber = (number: string) => {
-    const formattedNumber = number.padEnd(16, '#');
-    return formattedNumber.match(/.{1,4}/g)?.join(' ') || '';
-  };
-
   const [flipped, setFlipped] = useState(false);
   const animatedValue = useState(new Animated.Value(0))[0];
   const opacityValue = useState(new Animated.Value(1))[0];
-  let value = 0;
+  let flipValue = 0;
 
-  animatedValue.addListener(({ value: val }) => {
-    value = val;
+  animatedValue.addListener(({ value }) => {
+    flipValue = value;
   });
+
+  const formatCardNumber = (number: string) => number.padEnd(16, '#').match(/.{1,4}/g)?.join(' ') || '';
 
   const frontInterpolate = animatedValue.interpolate({
     inputRange: [0, 180],
@@ -35,341 +29,86 @@ const CreditCard = () => {
   });
 
   const flipCard = () => {
-    if (value >= 90) {
+    if (flipValue >= 90) {
       Animated.parallel([
-        Animated.spring(animatedValue, {
-          toValue: 0,
-          friction: 8,
-          tension: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacityValue, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
+        Animated.spring(animatedValue, { toValue: 0, friction: 8, tension: 10, useNativeDriver: true }),
+        Animated.timing(opacityValue, { toValue: 1, duration: 300, useNativeDriver: true }),
       ]).start();
     } else {
       Animated.parallel([
-        Animated.spring(animatedValue, {
-          toValue: 180,
-          friction: 8,
-          tension: 10,
-          useNativeDriver: true,
-        }),
-        Animated.timing(opacityValue, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
+        Animated.spring(animatedValue, { toValue: 180, friction: 8, tension: 10, useNativeDriver: true }),
+        Animated.timing(opacityValue, { toValue: 0, duration: 300, useNativeDriver: true }),
       ]).start();
     }
     setFlipped(!flipped);
   };
 
-  const frontAnimatedStyle = {
-    transform: [{ rotateY: frontInterpolate }],
-  };
+  const CreditCardPreviewFront = () => (
+    <View style={styles.cardPreview}>
+      <View style={styles.cardHeader}>
+        <Image source={require('../assets/images/hologramme-cb.png')} style={styles.hologram}/>
+        <Image source={require('../assets/images/unionpay.png')} style={styles.bankLogo}/>
+      </View>
+      <View style={styles.cardDetails}>
+        <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+        <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+        <Text style={styles.cardExpiry}>{expiryMonth || 'MM'}/{expiryYear || 'YY'}</Text>
+      </View>
+    </View>
+  );
 
-  const backAnimatedStyle = {
-    transform: [{ rotateY: backInterpolate }],
-  };
-
-  const CreditCardPreviewFront = () => {
-    return (
-      <View style={stylesInput.cardPreview}>
-      <View style={stylesInput.logo}>
-        <Image source={require('../assets/images/hologramme-cb.png')} style={stylesInput.hologram}/>
-        <Image source={require('../assets/images/unionpay.png')} style={stylesInput.logoBank}/>
-      </View>
-      <View style={stylesInput.cardInfos}>
-        <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-        <Text style={stylesInput.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-        <Text style={stylesInput.cardExpiry}>
-          {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-        </Text>
-      </View>
-      </View>
-    )
-  }
-
-  const CreditCardPreviewBack = () => {
-    return (
-      <View style={stylesInput.cardPreview}>
-      <View style={stylesInput.cardInfos}>
-        <Text style={stylesInput.cvv}>{cvv}</Text>
-      </View>
-      </View>
-
-    )
-  }
+  const CreditCardPreviewBack = () => (
+    <View style={styles.cardPreview}>
+      <View style={styles.cardDetails}><Text style={styles.cvv}>{cvv}</Text></View>
+    </View>
+  );
 
   return (
-    <View style={stylesInput.container}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={flipCard}>
-        <View style={stylesInput.cardPreview}>
-
-          <Animated.View style={[styles.card, frontAnimatedStyle, { opacity: opacityValue }]}>
+        <View style={styles.cardContainer}>
+          <Animated.View style={[styles.card, { transform: [{ rotateY: frontInterpolate }], opacity: opacityValue }]}> 
             <CreditCardPreviewFront />
           </Animated.View>
-          <Animated.View style={[styles.card, backAnimatedStyle, { opacity: Animated.subtract(1, opacityValue) }]}>
+          <Animated.View style={[styles.card, { transform: [{ rotateY: backInterpolate }], opacity: Animated.subtract(1, opacityValue) }]}> 
             <CreditCardPreviewBack />
           </Animated.View>
         </View>
       </TouchableOpacity>
 
-      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>
-        <Text style={stylesInput.title}>Card Number</Text>
-        <TextInput
-          style={stylesInput.input}
-          keyboardType="numeric"
-          maxLength={16}
-          value={cardNumber}
-          onChangeText={setCardNumber}
-        />
-
-        <Text style={stylesInput.title}>Card Holder</Text>
-        <TextInput
-          style={stylesInput.input}
-          value={cardName}
-          onChangeText={setCardName}
-        />
-
-        {/* Expiry Date and CVV */}
-        <View style={stylesInput.row}>
-          <View style={stylesInput.col}>
-            <Text style={stylesInput.title}>Expiration Date</Text>
-            <View style={stylesInput.row}>
-              <TextInput
-                style={[stylesInput.input, stylesInput.inputSmall]}
-                value={expiryMonth}
-                onChangeText={setExpiryMonth}
-                maxLength={2}
-                placeholder="MM"
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={[stylesInput.input, stylesInput.inputSmall]}
-                value={expiryYear}
-                onChangeText={setExpiryYear}
-                maxLength={2}
-                placeholder="YY"
-                keyboardType="numeric"
-              />
-            </View>
-          </View>
-          <View style={stylesInput.spacer}></View>
-          <View style={stylesInput.col}>
-            <Text style={stylesInput.title}>CVV</Text>
-            <TextInput
-              style={stylesInput.input}
-              value={cvv}
-              onChangeText={setCvv}
-              maxLength={4}
-              placeholder='***'
-              keyboardType="numeric"
-            />
-          </View>
+      <ScrollView contentContainerStyle={styles.formContainer}>
+        <TextInput style={styles.input} placeholder="Card Number" maxLength={16} keyboardType="numeric" value={cardNumber} onChangeText={setCardNumber} />
+        <TextInput style={styles.input} placeholder="Card Holder" value={cardName} onChangeText={setCardName} />
+        <View style={styles.rowContainer}>
+          <TextInput style={[styles.input, styles.smallInput]} placeholder="MM" maxLength={2} keyboardType="numeric" value={expiryMonth} onChangeText={setExpiryMonth} />
+          <TextInput style={[styles.input, styles.smallInput]} placeholder="YY" maxLength={2} keyboardType="numeric" value={expiryYear} onChangeText={setExpiryYear} />
+          <TextInput style={[styles.input, styles.smallInput]} placeholder="CVV" maxLength={4} keyboardType="numeric" value={cvv} onChangeText={setCvv} />
         </View>
-        {/* Submit Button */}
-        <TouchableOpacity style={stylesInput.button}>
-          <Text style={stylesInput.buttonText}>Submit</Text>
-        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
       </ScrollView>
-
     </View>
-
-
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 50,
-    zIndex: 1,
-  },
-  cardContainer: {
-    width: 300,
-    height: 200,
-    zIndex: 2,
-  },
-  card: {
-    width: 300,
-    height: 200,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backfaceVisibility: 'hidden',
-  },
-  front: {
-    backgroundColor: 'skyblue',
-    position: 'absolute',
-  },
-  back: {
-    backgroundColor: 'tomato',
-    position: 'absolute',
-  },
-  text: {
-    fontSize: 20,
-    color: 'white',
-  },
+  container: { flex: 1, alignItems: 'center', paddingTop: 50, backgroundColor: '#f4f4f4' },
+  cardContainer: { width: 300, height: 200 },
+  card: { width: 300, height: 200, position: 'absolute', backfaceVisibility: 'hidden' },
+  cardPreview: { flex: 1, borderRadius: 16, backgroundColor: '#2b2d42', padding: 16 },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  hologram: { width: 40, height: 40 },
+  bankLogo: { width: 80, height: 40 },
+  cardDetails: { flex: 1, justifyContent: 'space-between', marginTop: 16 },
+  cardNumber: { color: '#fff', fontSize: 18, letterSpacing: 2 },
+  cardHolder: { color: '#fff', fontSize: 14 },
+  cardExpiry: { color: '#fff', fontSize: 14 },
+  cvv: { textAlign: 'right', color: '#fff', fontSize: 14 },
+  formContainer: { padding: 20, alignItems: 'center' },
+  input: { width: '90%', height: 50, backgroundColor: '#fff', borderRadius: 8, marginVertical: 10, paddingHorizontal: 10, borderWidth: 1, borderColor: '#ddd' },
+  smallInput: { width: '25%' },
+  rowContainer: { flexDirection: 'row', justifyContent: 'space-between', width: '90%' },
+  button: { marginTop: 20, width: '90%', height: 50, backgroundColor: '#0056d6', borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
 });
-
-const stylesInput = StyleSheet.create({
-  container: {
-    backgroundColor: '#DAEEFE',
-    alignItems: 'center',
-    padding: '5%',
-  },
-  cardPreview: {
-    display: 'flex',
-    width: 300,
-    height: 200,
-    backgroundColor: '#2b2d42',
-    borderRadius: 16,
-    padding: '4%',
-    // justifyContent: 'space-between',
-    zIndex: 2,
-    elevation: 20,
-    shadowColor: '#52006A',
-  },
-  cardBackground: {
-    position: 'absolute',
-    width: 253,
-    height: 160,
-    borderRadius: 16,
-    zIndex: 2,
-  },
-  logo: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  hologram: {
-    width: 40,
-    height: 50,
-    zIndex: 3,
-  },
-  logoBank: {
-    width: 80,
-    height: 40,
-    zIndex: 3,
-  },
-  cardInfosContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    zIndex: 3,
-  },
-  cardInfos: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    height: '70%',
-    zIndex: 3,
-  },
-  inputCard: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 'auto',
-    paddingTop: '20%',
-    paddingBottom: '10%',
-    position: 'relative',
-    top: '-12%',
-    zIndex: 0,
-  },
-  scrollViewContent: {
-    alignItems: 'center',
-  },
-  cardNumber: {
-    width: '100%',
-    color: 'white',
-    letterSpacing: 2,
-    marginTop: 15,
-  },
-  cardHolder: {
-    color: 'white',
-    fontSize: 16,
-    textTransform: 'uppercase',
-  },
-  cardExpiry: {
-    color: 'white',
-    fontSize: 16,
-  },
-  input: {
-    width: '90%',
-    height: 50,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginVertical: 0,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginLeft: '3%',
-  },
-  picker: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'transparent',
-    borderRadius: 8,
-    borderColor: '#ddd',
-  },
-  button: {
-    width: '90%',
-    height: 50,
-    backgroundColor: '#0056d6',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  inputPicker: {
-    width: '30%',
-    height: 50,
-    backgroundColor: 'white',
-    borderRadius: 8,
-    borderColor: '#ddd',
-  },
-  cvv: {
-    width: 80,
-    borderRadius: 8,
-    borderColor: '#ddd',
-    height: 50,
-    marginLeft: "7%",
-  },
-  title: {
-    width: '90%',
-    textAlign: 'left',
-    fontSize: 12,
-    marginTop: 20,
-    marginBottom: 5,
-    color: 'black',
-  },
-  col: {
-    flex: 1,
-  },
-  inputSmall: {
-    width: 80,
-    marginRight: 10,
-  },
-  spacer: {
-    paddingRight: 40,
-  },
-});
-
 
 export default CreditCard;
