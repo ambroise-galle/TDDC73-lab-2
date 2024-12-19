@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, Image, ImageBackground, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated, Image, ImageBackground, ScrollView } from 'react-native';
 
 
 
@@ -76,46 +76,44 @@ const CreditCard = () => {
   };
 
   const CreditCardPreviewFront = () => {
-    return(
+    return (
       <View style={stylesInput.cardPreview}>
-        <ImageBackground source={require('../assets/images/10.jpeg')} style={stylesInput.cardBackground}>
-        <View style={stylesInput.cardInfosContainer}>
-          <View style={stylesInput.logo}>
-            <Image source={require('../assets/images/hologramme-cb.png')} style={stylesInput.hologram}/>
-            <Image source={require('../assets/images/unionpay.png')} style={stylesInput.logoBank}/>
-          </View>
-          <View style={stylesInput.cardInfos}>
-            <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-            <Text style={stylesInput.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-            <Text style={stylesInput.cardExpiry}>
-              {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-            </Text>
-          </View>
-        </View>
-        </ImageBackground>
+      <View style={stylesInput.logo}>
+        <Image source={require('../assets/images/hologramme-cb.png')} style={stylesInput.hologram}/>
+        <Image source={require('../assets/images/unionpay.png')} style={stylesInput.logoBank}/>
       </View>
-  )}
+      <View style={stylesInput.cardInfos}>
+        <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+        <Text style={stylesInput.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
+        <Text style={stylesInput.cardExpiry}>
+          {expiryMonth || 'MM'}/{expiryYear || 'YY'}
+        </Text>
+      </View>
+      </View>
+    )
+  }
 
   const CreditCardPreviewBack = () => {
-    return(
-    <View style={stylesInput.cardPreview}>
-      <ImageBackground source={require('../assets/images/10.jpeg')} style={stylesInput.cardBackground}>
-        <View style={stylesInput.cardInfos}>
-          <Text style={stylesInput.cvv}>{cvv}</Text>
-        </View>
-      </ImageBackground>
-    </View>
-  )}
+    return (
+      <View style={stylesInput.cardPreview}>
+      <View style={stylesInput.cardInfos}>
+        <Text style={stylesInput.cvv}>{cvv}</Text>
+      </View>
+      </View>
+
+    )
+  }
 
   return (
-    <View style={styles.container}>
+    <View style={stylesInput.container}>
       <TouchableOpacity onPress={flipCard}>
-        <View style={styles.cardContainer}>
-          <Animated.View style={[styles.card, frontAnimatedStyle, styles.front, { opacity: opacityValue }]}>
-            <CreditCardPreviewFront/>
+        <View style={stylesInput.cardPreview}>
+
+          <Animated.View style={[styles.card, frontAnimatedStyle, { opacity: opacityValue }]}>
+            <CreditCardPreviewFront />
           </Animated.View>
-          <Animated.View style={[styles.card, backAnimatedStyle, styles.back, { opacity: Animated.subtract(1, opacityValue) }]}>
-            <CreditCardPreviewBack/>
+          <Animated.View style={[styles.card, backAnimatedStyle, { opacity: Animated.subtract(1, opacityValue) }]}>
+            <CreditCardPreviewBack />
           </Animated.View>
         </View>
       </TouchableOpacity>
@@ -191,11 +189,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingTop: 50,
+    zIndex: 1,
   },
   cardContainer: {
     width: 300,
     height: 200,
-    zIndex: 3,
+    zIndex: 2,
   },
   card: {
     width: 300,
@@ -226,13 +225,13 @@ const stylesInput = StyleSheet.create({
   },
   cardPreview: {
     display: 'flex',
-    width: '75%',
-    aspectRatio: 1.586,
+    width: 300,
+    height: 200,
     backgroundColor: '#2b2d42',
     borderRadius: 16,
     padding: '4%',
     // justifyContent: 'space-between',
-    zIndex: 1,
+    zIndex: 2,
     elevation: 20,
     shadowColor: '#52006A',
   },
