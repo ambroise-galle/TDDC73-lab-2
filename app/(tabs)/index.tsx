@@ -1,111 +1,193 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, ImageBackground } from 'react-native';
-// import { Picker } from '@react-native-picker/picker';
+import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, ScrollView, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
+import { blue } from 'react-native-reanimated/lib/typescript/Colors';
 
-const CreditCardInput = () => {
+
+const CreditCard = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
   const [expiryMonth, setExpiryMonth] = useState('');
   const [expiryYear, setExpiryYear] = useState('');
   const [cvv, setCvv] = useState('');
-
   const formatCardNumber = (number: string) => {
     const formattedNumber = number.padEnd(16, '#');
     return formattedNumber.match(/.{1,4}/g)?.join(' ') || '';
   };
 
+  const [flipped, setFlipped] = useState(false);
+  const animatedValue = useState(new Animated.Value(0))[0];
+  const opacityValue = useState(new Animated.Value(1))[0];
+  let value = 0;
+
+  animatedValue.addListener(({ value: val }) => {
+    value = val;
+  });
+
+  const frontInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['0deg', '180deg'],
+  });
+
+  const backInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['180deg', '360deg'],
+  });
+
+  const flipCard = () => {
+    if (value >= 90) {
+      Animated.parallel([
+        Animated.spring(animatedValue, {
+          toValue: 0,
+          friction: 8,
+          tension: 10,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityValue, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.spring(animatedValue, {
+          toValue: 180,
+          friction: 8,
+          tension: 10,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityValue, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+    setFlipped(!flipped);
+  };
+
+  const frontAnimatedStyle = {
+    transform: [{ rotateY: frontInterpolate }],
+  };
+
+  const backAnimatedStyle = {
+    transform: [{ rotateY: backInterpolate }],
+  };
 
   return (
-
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.container}>
-      {/* Card Preview */}
-        <View style={styles.cardPreview}>
-          <ImageBackground source={require('../../assets/images/10.jpeg')} style={styles.cardBackground}>
-          <View style={styles.cardInfosContainer}>
-            <View style={styles.logo}>
-              <Image source={require('../../assets/images/hologramme-cb.png')} style={styles.hologram}/>
-              <Image source={require('../../assets/images/unionpay.png')} style={styles.logoBank}/>
-            </View>
-            <View style={styles.cardInfos}>
-              <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-              <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-              <Text style={styles.cardExpiry}>
-                {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-              </Text>
-            </View>
-          </View>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={-40} style={stylesInput.container1}>
+      <TouchableOpacity onPress={flipCard}>
+        <View style={stylesInput.cardContainer}>
+          <Animated.View style={[stylesInput.card, frontAnimatedStyle, stylesInput.front, { opacity: opacityValue }]}>
+          <ImageBackground
+          source={require("../../assets/images/10.jpeg")}
+          style={stylesInput.cardBackground}
+          >
+            <Text style={stylesInput.text}>Front</Text>
           </ImageBackground>
+          </Animated.View>
+          <Animated.View style={[stylesInput.card, backAnimatedStyle, stylesInput.back, { opacity: Animated.subtract(1, opacityValue) }]}>
+          <ImageBackground
+          source={require("../../assets/images/10.jpeg")}
+          style={stylesInput.cardBackground}
+          >
+            <Text style={stylesInput.text}>Back</Text>
+          </ImageBackground>
+          </Animated.View>
         </View>
+      </TouchableOpacity>
 
-        {/* Input Fields */}
-        <ScrollView style={styles.inputCard} contentContainerStyle={styles.scrollViewContent}>
-          <Text style={styles.title}>Card Number</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            maxLength={16}
-            value={cardNumber}
-            onChangeText={setCardNumber}
-          />
+      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>
+        <Text style={stylesInput.title}>Card Number</Text>
+        <TextInput
+          style={stylesInput.input}
+          keyboardType="numeric"
+          maxLength={16}
+          value={cardNumber}
+          onChangeText={setCardNumber}
+          placeholder='**** **** **** ****'
+          placeholderTextColor={'#c5c3c2'}
+        />
 
-          <Text style={styles.title}>Card Holder</Text>
-          <TextInput
-            style={styles.input}
-            value={cardName}
-            onChangeText={setCardName}
-          />
+        <Text style={stylesInput.title}>Card Holder</Text>
+        <TextInput
+          style={stylesInput.input}
+          value={cardName}
+          onChangeText={setCardName}
+          placeholder='Name Surname'
+          placeholderTextColor={'#c5c3c2'}
+        />
 
-          {/* Expiry Date and CVV */}
-          <View style={styles.row}>
-            <View style={styles.col}>
-              <Text style={styles.title}>Expiration Date</Text>
-              <View style={styles.row}>
-                <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  value={expiryMonth}
-                  onChangeText={setExpiryMonth}
-                  maxLength={2}
-                  placeholder="MM"
-                  keyboardType="numeric"
-                />
-                <TextInput
-                  style={[styles.input, styles.inputSmall]}
-                  value={expiryYear}
-                  onChangeText={setExpiryYear}
-                  maxLength={2}
-                  placeholder="YY"
-                  keyboardType="numeric"
-                />
-              </View>
-            </View>
-            <View style={styles.spacer}></View>
-            <View style={styles.col}>
-              <Text style={styles.title}>CVV</Text>
+        {/* Expiry Date and CVV */}
+        <View style={stylesInput.row}>
+          <View style={stylesInput.col}>
+            <Text style={stylesInput.title}>Expiration Date</Text>
+            <View style={stylesInput.row}>
               <TextInput
-                style={styles.input}
-                value={cvv}
-                onChangeText={setCvv}
-                maxLength={4}
-                placeholder='***'
+                style={[stylesInput.input, stylesInput.inputSmall]}
+                value={expiryMonth}
+                onChangeText={setExpiryMonth}
+                maxLength={2}
+                placeholder="MM"
+                placeholderTextColor={'#c5c3c2'}
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={[stylesInput.input, stylesInput.inputSmall]}
+                value={expiryYear}
+                onChangeText={setExpiryYear}
+                maxLength={2}
+                placeholder="YY"
+                placeholderTextColor={'#c5c3c2'}
                 keyboardType="numeric"
               />
             </View>
           </View>
-          {/* Submit Button */}
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
-        </ScrollView>
+          <View style={stylesInput.spacer}></View>
+          <View style={stylesInput.col}>
+            <Text style={stylesInput.title}>CVV</Text>
+            <TextInput
+              style={stylesInput.input}
+              value={cvv}
+              onChangeText={setCvv}
+              maxLength={4}
+              placeholder='***'
+              placeholderTextColor={'#c5c3c2'}
+              keyboardType="numeric"
+            />
+          </View>
+        </View>
+        {/* Submit Button */}
+        <TouchableOpacity style={stylesInput.button}>
+          <Text style={stylesInput.buttonText}>Submit</Text>
+        </TouchableOpacity>
+      </ScrollView>
+
     </KeyboardAvoidingView>
+
+
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#DAEEFE',
+
+const stylesInput = StyleSheet.create({
+  // container: {
+  //   backgroundColor: '#DAEEFE',
+  //   alignItems: 'center',
+  //   padding: '5%',
+  // },
+  container1: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 50,
     padding: '5%',
+    backgroundColor: '#DAEEFE',
   },
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// CARD PREVIEW STYLE
+
   cardPreview: {
     display: 'flex',
     width: '75%',
@@ -116,18 +198,49 @@ const styles = StyleSheet.create({
     zIndex: 1,
     elevation: 20,
     shadowColor: '#52006A',
+  },
+  cardContainer: {
+    display: 'flex',
+    width: '75%',
+    aspectRatio: 1.586,
     overflow: 'hidden',
+    padding: '4%',
+    // height: 200,
+    zIndex: 2,
+  },
+  card: {
+    width: 300,
+    height: 200,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backfaceVisibility: 'hidden',
+    borderRadius: 16,
+    zIndex: 3,
+  },
+  front: {
+    position: 'absolute',
+    zIndex: 3,
+  },
+  back: {
+    position: 'absolute',
+  },
+  text: {
+    fontSize: 20,
+    color: 'white',
   },
   cardBackground: {
     position: 'absolute',
-    flex: 1, 
+    flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+    zIndex: 3,
     top: 0,
     bottom: 0,
-    right: 0,
     left: 0,
+    right: 0,
   },
+
+
   logo: {
     display: 'flex',
     flexDirection: 'row',
@@ -148,7 +261,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'flex-end',
     zIndex: 3,
-    padding: 15,
   },
   cardInfos: {
     display: 'flex',
@@ -158,6 +270,10 @@ const styles = StyleSheet.create({
     height: '70%',
     zIndex: 3,
   },
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+// CARD INPUT STYLE
+
   inputCard: {
     width: '100%',
     backgroundColor: '#FFFFFF',
@@ -196,6 +312,7 @@ const styles = StyleSheet.create({
     marginVertical: 0,
     borderWidth: 1,
     borderColor: '#ddd',
+    
   },
   row: {
     display: 'flex',
@@ -258,4 +375,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CreditCardInput;
+
+export default CreditCard;
+
