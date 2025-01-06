@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, ScrollView, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
-import { blue } from 'react-native-reanimated/lib/typescript/Colors';
-
 
 const CreditCard = () => {
   const [cardNumber, setCardNumber] = useState('');
@@ -75,31 +73,39 @@ const CreditCard = () => {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={-40} style={stylesInput.container1}>
-      <TouchableOpacity onPress={flipCard}>
-        <View style={stylesInput.cardContainer}>
-          <Animated.View style={[stylesInput.card, frontAnimatedStyle, stylesInput.front, { opacity: opacityValue }]}>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={-40} style={stylesInput.container1}> {/* Creation of the KeyboardAvoidingView to be able to quit the keybord*/}
+      <View style={[stylesInput.cardPreviewWrapper]}>
+    <TouchableOpacity onPress={flipCard}>
+      <View style={stylesInput.cardContainer}>
+        <Animated.View style={[stylesInput.card, frontAnimatedStyle, stylesInput.front, { opacity: opacityValue }]}>
           <ImageBackground
-          source={require("../../assets/images/10.jpeg")}
-          style={stylesInput.cardBackground}
+            source={require("../../assets/images/10.jpeg")}
+            style={stylesInput.cardBackground}
           >
-            <Text style={stylesInput.text}>Front</Text>
+            <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+            <Text style={stylesInput.cardHolder}>{cardName || "HOLDER NAME"}</Text>
+              <Text style={stylesInput.cardExpiry}>
+                {expiryMonth || "MM"}/{expiryYear || "YY"}
+              </Text>
           </ImageBackground>
-          </Animated.View>
-          <Animated.View style={[stylesInput.card, backAnimatedStyle, stylesInput.back, { opacity: Animated.subtract(1, opacityValue) }]}>
+        </Animated.View>
+        <Animated.View style={[stylesInput.card, backAnimatedStyle, stylesInput.back, { opacity: Animated.subtract(1, opacityValue) }]}>
           <ImageBackground
-          source={require("../../assets/images/10.jpeg")}
-          style={stylesInput.cardBackground}
+            source={require("../../assets/images/10.jpeg")}
+            style={stylesInput.cardBackground}
           >
-            <Text style={stylesInput.text}>Back</Text>
+            <Text style={stylesInput.cvvCard}>
+              {cvv || "CVV"}
+            </Text>
           </ImageBackground>
-          </Animated.View>
-        </View>
-      </TouchableOpacity>
+        </Animated.View>
+      </View>
+    </TouchableOpacity>
+  </View>
 
-      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>
+      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>  {/* Creation of a Scrollview to be able to see last input when we have the keyboard on*/}
         <Text style={stylesInput.title}>Card Number</Text>
-        <TextInput
+        <TextInput                          // Input of the card numbers
           style={stylesInput.input}
           keyboardType="numeric"
           maxLength={16}
@@ -110,7 +116,7 @@ const CreditCard = () => {
         />
 
         <Text style={stylesInput.title}>Card Holder</Text>
-        <TextInput
+        <TextInput                        // Input of the card name
           style={stylesInput.input}
           value={cardName}
           onChangeText={setCardName}
@@ -119,11 +125,11 @@ const CreditCard = () => {
         />
 
         {/* Expiry Date and CVV */}
-        <View style={stylesInput.row}>
-          <View style={stylesInput.col}>
+        <View style={stylesInput.row}>            {/* Creation of the Expitation Date and CVV row*/}
+          <View style={stylesInput.col}>          {/* Creation of the Expiration Date title and inputs column*/}
             <Text style={stylesInput.title}>Expiration Date</Text>
-            <View style={stylesInput.row}>
-              <TextInput
+            <View style={stylesInput.row}>        {/* Creation of the Expitation Date's inputs row*/}
+              <TextInput                  // Input of the card expiry date 
                 style={[stylesInput.input, stylesInput.inputSmall]}
                 value={expiryMonth}
                 onChangeText={setExpiryMonth}
@@ -144,9 +150,9 @@ const CreditCard = () => {
             </View>
           </View>
           <View style={stylesInput.spacer}></View>
-          <View style={stylesInput.col}>
+          <View style={stylesInput.col}>          {/* Creation of the CVV title and input column*/}
             <Text style={stylesInput.title}>CVV</Text>
-            <TextInput
+            <TextInput                  // Input of the card cvv
               style={stylesInput.input}
               value={cvv}
               onChangeText={setCvv}
@@ -158,55 +164,55 @@ const CreditCard = () => {
           </View>
         </View>
         {/* Submit Button */}
-        <TouchableOpacity style={stylesInput.button}>
-          <Text style={stylesInput.buttonText}>Submit</Text>
+        <TouchableOpacity style={stylesInput.button}> 
+          <Text style={stylesInput.buttonText}>Submit</Text>  
         </TouchableOpacity>
       </ScrollView>
-
     </KeyboardAvoidingView>
-
-
   );
 };
 
 
 const stylesInput = StyleSheet.create({
-  // container: {
-  //   backgroundColor: '#DAEEFE',
-  //   alignItems: 'center',
-  //   padding: '5%',
-  // },
   container1: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: 50,
-    padding: '5%',
-    backgroundColor: '#DAEEFE',
+  flex: 1,
+  width: '100%',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  position: 'relative',
+  padding: '5%',
+  backgroundColor: '#DAEEFE',
   },
 
 /*------------------------------------------------------------------------------------------------------------------*/
 // CARD PREVIEW STYLE
 
+  cardPreviewWrapper: {
+  position: 'relative',
+  top: '10%', 
+  zIndex: 10,
+  width: '100%',
+  alignItems: 'center',
+  },
+
   cardPreview: {
-    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
     width: '75%',
     aspectRatio: 1.586,
     backgroundColor: '#2b2d42',
-    borderRadius: 16,
-    padding: '4%',
+    padding: 0,
     zIndex: 1,
-    elevation: 20,
-    shadowColor: '#52006A',
   },
   cardContainer: {
-    display: 'flex',
     width: '75%',
     aspectRatio: 1.586,
     overflow: 'hidden',
     padding: '4%',
-    // height: 200,
     zIndex: 2,
+    borderRadius: 16,
   },
   card: {
     width: 300,
@@ -214,12 +220,10 @@ const stylesInput = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backfaceVisibility: 'hidden',
-    borderRadius: 16,
     zIndex: 3,
   },
   front: {
     position: 'absolute',
-    zIndex: 3,
   },
   back: {
     position: 'absolute',
@@ -229,18 +233,19 @@ const stylesInput = StyleSheet.create({
     color: 'white',
   },
   cardBackground: {
-    position: 'absolute',
     flex: 1,
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+    position: 'absolute',
     resizeMode: 'cover',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     zIndex: 3,
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
   },
-
-
+  /*
   logo: {
     display: 'flex',
     flexDirection: 'row',
@@ -249,18 +254,17 @@ const stylesInput = StyleSheet.create({
   hologram: {
     width: 40,
     height: 50,
-    zIndex: 3,
   },
   logoBank: {
     width: 80,
     height: 40,
-    zIndex: 3,
   },
+  */
+
   cardInfosContainer: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-end',
-    zIndex: 3,
   },
   cardInfos: {
     display: 'flex',
@@ -268,40 +272,55 @@ const stylesInput = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     height: '70%',
-    zIndex: 3,
   },
 
 /*---------------------------------------------------------------------------------------------------------------------*/
 // CARD INPUT STYLE
 
   inputCard: {
+    flex: 1,
     width: '100%',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 'auto',
     paddingTop: '20%',
-    paddingBottom: '10%',
+    paddingBottom: '20%',
+    zIndex: 5, // Lower than the card preview
     position: 'relative',
-    top: '-12%',
-    zIndex: 0,
   },
   scrollViewContent: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+    zIndex: 0,
   },
   cardNumber: {
     width: '100%',
     color: 'white',
     letterSpacing: 2,
     marginTop: 15,
+    fontWeight: 'bold',
+    paddingBottom: 15,
+    paddingTop: 40,
   },
   cardHolder: {
     color: 'white',
     fontSize: 16,
     textTransform: 'uppercase',
+    fontWeight: 'bold',
+    paddingBottom: 15,
   },
   cardExpiry: {
     color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cvvCard: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingTop: 130,
+    paddingLeft: 175,
   },
   input: {
     width: '90%',
@@ -312,7 +331,6 @@ const stylesInput = StyleSheet.create({
     marginVertical: 0,
     borderWidth: 1,
     borderColor: '#ddd',
-    
   },
   row: {
     display: 'flex',
@@ -373,6 +391,7 @@ const stylesInput = StyleSheet.create({
   spacer: {
     paddingRight: 40,
   },
+
 });
 
 
