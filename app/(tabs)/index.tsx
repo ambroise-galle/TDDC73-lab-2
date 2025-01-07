@@ -182,6 +182,7 @@ const stylesInput = StyleSheet.create({
   position: 'relative',
   padding: '5%',
   backgroundColor: '#DAEEFE',
+  bottom: 50,
   },
 
 /*------------------------------------------------------------------------------------------------------------------*/
@@ -204,14 +205,12 @@ const stylesInput = StyleSheet.create({
     aspectRatio: 1.586,
     backgroundColor: '#2b2d42',
     padding: 0,
-    zIndex: 1,
   },
   cardContainer: {
     width: '75%',
     aspectRatio: 1.586,
     overflow: 'hidden',
     padding: '4%',
-    zIndex: 2,
     borderRadius: 16,
   },
   card: {
@@ -220,7 +219,6 @@ const stylesInput = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backfaceVisibility: 'hidden',
-    zIndex: 3,
   },
   front: {
     position: 'absolute',
@@ -239,7 +237,6 @@ const stylesInput = StyleSheet.create({
     position: 'absolute',
     resizeMode: 'cover',
     justifyContent: 'flex-start',
-    zIndex: 3,
     top: 0,
     bottom: 0,
     left: 0,
@@ -282,9 +279,9 @@ const stylesInput = StyleSheet.create({
     width: '100%',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    paddingTop: '20%',
+    paddingTop: '40%',
     paddingBottom: '20%',
-    zIndex: 5, // Lower than the card preview
+    zIndex: 5,
     position: 'relative',
   },
   scrollViewContent: {
