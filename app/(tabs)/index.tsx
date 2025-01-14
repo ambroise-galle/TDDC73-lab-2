@@ -73,7 +73,7 @@ const CreditCard = () => {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={-40} style={stylesInput.container1}> {/* Creation of the KeyboardAvoidingView to be able to quit the keybord*/}
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={-40} style={stylesInput.container1}> 
       <View style={[stylesInput.cardPreviewWrapper]}>
     <TouchableOpacity onPress={flipCard}>
       <View style={stylesInput.cardContainer}>
@@ -103,7 +103,7 @@ const CreditCard = () => {
     </TouchableOpacity>
   </View>
 
-      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>  {/* Creation of a Scrollview to be able to see last input when we have the keyboard on*/}
+      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>  
         <Text style={stylesInput.title}>Card Number</Text>
         <TextInput                          // Input of the card numbers
           style={stylesInput.input}
@@ -124,11 +124,11 @@ const CreditCard = () => {
           placeholderTextColor={'#c5c3c2'}
         />
 
-        {/* Expiry Date and CVV */}
-        <View style={stylesInput.row}>            {/* Creation of the Expitation Date and CVV row*/}
-          <View style={stylesInput.col}>          {/* Creation of the Expiration Date title and inputs column*/}
+        
+        <View style={stylesInput.row}>            
+          <View style={stylesInput.col}>          
             <Text style={stylesInput.title}>Expiration Date</Text>
-            <View style={stylesInput.row}>        {/* Creation of the Expitation Date's inputs row*/}
+            <View style={stylesInput.row}>        
               <TextInput                  // Input of the card expiry date 
                 style={[stylesInput.input, stylesInput.inputSmall]}
                 value={expiryMonth}
@@ -150,7 +150,7 @@ const CreditCard = () => {
             </View>
           </View>
           <View style={stylesInput.spacer}></View>
-          <View style={stylesInput.col}>          {/* Creation of the CVV title and input column*/}
+          <View style={stylesInput.col}>          
             <Text style={stylesInput.title}>CVV</Text>
             <TextInput                  // Input of the card cvv
               style={stylesInput.input}
@@ -160,10 +160,20 @@ const CreditCard = () => {
               placeholder='***'
               placeholderTextColor={'#c5c3c2'}
               keyboardType="numeric"
+              onFocus={() => {
+                if (!flipped) {
+                  flipCard();
+                }
+              }}
+              onBlur={() => {
+                if (flipped) {
+                  flipCard();
+                }
+              }}
             />
           </View>
         </View>
-        {/* Submit Button */}
+        
         <TouchableOpacity style={stylesInput.button}> 
           <Text style={stylesInput.buttonText}>Submit</Text>  
         </TouchableOpacity>
