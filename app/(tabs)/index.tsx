@@ -64,6 +64,58 @@ const CreditCard = () => {
     setFlipped(!flipped);
   };
 
+  const cardfront = () => {
+    if (value >= 90) {
+      flipCard();
+    }
+    setFlipped(false);
+  }
+
+  const cardback = () => {
+    if (value < 90) {
+      flipCard();
+    }
+    setFlipped(true);
+  }
+
+  const getCardType = () => {
+    let number = cardNumber;
+    let re = new RegExp("^4");
+    if (number.match(re) != null) return "visa";
+
+    re = new RegExp("^(34|37)");
+    if (number.match(re) != null) return "amex";
+
+    re = new RegExp("^5[1-5]");
+    if (number.match(re) != null) return "mastercard";
+
+    re = new RegExp("^6011");
+    if (number.match(re) != null) return "discover";
+    
+    re = new RegExp('^9792')
+    if (number.match(re) != null) return 'troy'
+
+    return "visa"; // default type
+  };
+
+  const getBankLogo = () => {
+    const type = getCardType();
+    switch (type) {
+      case "visa":
+        return require("../../assets/images/visa.png");
+      case "amex":
+        return require("../../assets/images/amex.png");
+      case "mastercard":
+        return require("../../assets/images/mastercard.png");
+      case "discover":
+        return require("../../assets/images/discover.png");
+      case "troy":
+        return require("../../assets/images/troy.png");
+      default:
+        return require("../../assets/images/visa.png");
+    }
+  }
+
   const frontAnimatedStyle = {
     transform: [{ rotateY: frontInterpolate }],
   };
@@ -82,6 +134,11 @@ const CreditCard = () => {
             source={require("../../assets/images/10.jpeg")}
             style={stylesInput.cardBackground}
           >
+            <View style={stylesInput.logo}>
+              <View style={stylesInput.logoContainer}>
+                <ImageBackground source={getBankLogo()} style={stylesInput.logoBank} resizeMode='contain'/>
+              </View>
+            </View>
             <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
             <Text style={stylesInput.cardHolder}>{cardName || "HOLDER NAME"}</Text>
               <Text style={stylesInput.cardExpiry}>
@@ -160,16 +217,8 @@ const CreditCard = () => {
               placeholder='***'
               placeholderTextColor={'#c5c3c2'}
               keyboardType="numeric"
-              onFocus={() => {
-                if (!flipped) {
-                  flipCard();
-                }
-              }}
-              onBlur={() => {
-                if (flipped) {
-                  flipCard();
-                }
-              }}
+              onFocus={cardback}
+              onBlur={cardfront}
             />
           </View>
         </View>
@@ -252,21 +301,24 @@ const stylesInput = StyleSheet.create({
     left: 0,
     right: 0,
   },
-  /*
+
   logo: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
+    paddingTop: 15,
+    paddingRight: 35,
+    width: '100%',
   },
-  hologram: {
-    width: 40,
-    height: 50,
-  },
-  logoBank: {
+  logoContainer: {
     width: 80,
     height: 40,
   },
-  */
+  logoBank: {
+    width: '100%',
+    height: '100%',
+  },
+
 
   cardInfosContainer: {
     display: 'flex',
@@ -305,10 +357,9 @@ const stylesInput = StyleSheet.create({
     width: '100%',
     color: 'white',
     letterSpacing: 2,
-    marginTop: 15,
     fontWeight: 'bold',
     paddingBottom: 15,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   cardHolder: {
     color: 'white',
