@@ -1,134 +1,333 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-// import { Picker } from '@react-native-picker/picker';
+import { View, Text,TextInput , TouchableOpacity, StyleSheet, Animated, ScrollView, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
 
-const CreditCardInput = () => {
+const CreditCard = () => {
   const [cardNumber, setCardNumber] = useState('');
   const [cardName, setCardName] = useState('');
   const [expiryMonth, setExpiryMonth] = useState('');
   const [expiryYear, setExpiryYear] = useState('');
   const [cvv, setCvv] = useState('');
-
   const formatCardNumber = (number: string) => {
     const formattedNumber = number.padEnd(16, '#');
     return formattedNumber.match(/.{1,4}/g)?.join(' ') || '';
   };
 
+  const [flipped, setFlipped] = useState(false);
+  const animatedValue = useState(new Animated.Value(0))[0];
+  const opacityValue = useState(new Animated.Value(1))[0];
+  let value = 0;
+
+  animatedValue.addListener(({ value: val }) => {
+    value = val;
+  });
+
+  const frontInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['0deg', '180deg'],
+  });
+
+  const backInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['180deg', '360deg'],
+  });
+
+  const flipCard = () => {
+    if (value >= 90) {
+      Animated.parallel([
+        Animated.spring(animatedValue, {
+          toValue: 0,
+          friction: 8,
+          tension: 10,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityValue, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else {
+      Animated.parallel([
+        Animated.spring(animatedValue, {
+          toValue: 180,
+          friction: 8,
+          tension: 10,
+          useNativeDriver: true,
+        }),
+        Animated.timing(opacityValue, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    }
+    setFlipped(!flipped);
+  };
+
+  const frontAnimatedStyle = {
+    transform: [{ rotateY: frontInterpolate }],
+  };
+
+  const backAnimatedStyle = {
+    transform: [{ rotateY: backInterpolate }],
+  };
 
   return (
-
-    <View style={styles.container}>
-      {/* Card Preview */}
-      <View style={styles.cardPreview}>
-        <Text style={styles.cardNumber}>{formatCardNumber(cardNumber)}</Text>
-        <Text style={styles.cardHolder}>{cardName || 'HOLDER NAME'}</Text>
-        <Text style={styles.cardExpiry}>
-          {expiryMonth || 'MM'}/{expiryYear || 'YY'}
-        </Text>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={-40} style={stylesInput.container1}> 
+      <View style={[stylesInput.cardPreviewWrapper]}>
+    <TouchableOpacity onPress={flipCard}>
+      <View style={stylesInput.cardContainer}>
+        <Animated.View style={[stylesInput.card, frontAnimatedStyle, stylesInput.front, { opacity: opacityValue }]}>
+          <ImageBackground
+            source={require("../../assets/images/10.jpeg")}
+            style={stylesInput.cardBackground}
+          >
+            <Text style={stylesInput.cardNumber}>{formatCardNumber(cardNumber)}</Text>
+            <Text style={stylesInput.cardHolder}>{cardName || "HOLDER NAME"}</Text>
+              <Text style={stylesInput.cardExpiry}>
+                {expiryMonth || "MM"}/{expiryYear || "YY"}
+              </Text>
+          </ImageBackground>
+        </Animated.View>
+        <Animated.View style={[stylesInput.card, backAnimatedStyle, stylesInput.back, { opacity: Animated.subtract(1, opacityValue) }]}>
+          <ImageBackground
+            source={require("../../assets/images/10.jpeg")}
+            style={stylesInput.cardBackground}
+          >
+            <Text style={stylesInput.cvvCard}>
+              {cvv || "CVV"}
+            </Text>
+          </ImageBackground>
+        </Animated.View>
       </View>
+    </TouchableOpacity>
+  </View>
 
-      {/* Input Fields */}
-      <View style={styles.inputCard}>
-        <Text style={styles.title}>Card Number</Text>
-        <TextInput
-          style={styles.input}
+      <ScrollView style={stylesInput.inputCard} contentContainerStyle={stylesInput.scrollViewContent}>  
+        <Text style={stylesInput.title}>Card Number</Text>
+        <TextInput                          // Input of the card numbers
+          style={stylesInput.input}
           keyboardType="numeric"
           maxLength={16}
           value={cardNumber}
           onChangeText={setCardNumber}
+          placeholder='**** **** **** ****'
+          placeholderTextColor={'#c5c3c2'}
         />
 
-        <Text style={styles.title}>Card Holder</Text>
-        <TextInput
-          style={styles.input}
+        <Text style={stylesInput.title}>Card Holder</Text>
+        <TextInput                        // Input of the card name
+          style={stylesInput.input}
           value={cardName}
           onChangeText={setCardName}
+          placeholder='Name Surname'
+          placeholderTextColor={'#c5c3c2'}
         />
 
-        {/* Expiry Date and CVV */}
-        <View style={styles.row}>
-          <View style={styles.col}>
-            <Text style={styles.title}>Expiration Date</Text>
-            <View style={styles.row}>
-              <TextInput
-                style={[styles.input, styles.inputSmall]}
+        
+        <View style={stylesInput.row}>            
+          <View style={stylesInput.col}>          
+            <Text style={stylesInput.title}>Expiration Date</Text>
+            <View style={stylesInput.row}>        
+              <TextInput                  // Input of the card expiry date 
+                style={[stylesInput.input, stylesInput.inputSmall]}
                 value={expiryMonth}
                 onChangeText={setExpiryMonth}
                 maxLength={2}
                 placeholder="MM"
+                placeholderTextColor={'#c5c3c2'}
                 keyboardType="numeric"
               />
               <TextInput
-                style={[styles.input, styles.inputSmall]}
+                style={[stylesInput.input, stylesInput.inputSmall]}
                 value={expiryYear}
                 onChangeText={setExpiryYear}
                 maxLength={2}
                 placeholder="YY"
+                placeholderTextColor={'#c5c3c2'}
                 keyboardType="numeric"
               />
             </View>
           </View>
-          <View style={styles.col}>
-            <Text style={styles.title}>CVV</Text>
-            <TextInput
-              style={styles.input}
+          <View style={stylesInput.spacer}></View>
+          <View style={stylesInput.col}>          
+            <Text style={stylesInput.title}>CVV</Text>
+            <TextInput                  // Input of the card cvv
+              style={stylesInput.input}
               value={cvv}
               onChangeText={setCvv}
               maxLength={4}
+              placeholder='***'
+              placeholderTextColor={'#c5c3c2'}
               keyboardType="numeric"
+              onFocus={() => {
+                if (!flipped) {
+                  flipCard();
+                }
+              }}
+              onBlur={() => {
+                if (flipped) {
+                  flipCard();
+                }
+              }}
             />
           </View>
         </View>
-        {/* Submit Button */}
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Submit</Text>
+        
+        <TouchableOpacity style={stylesInput.button}> 
+          <Text style={stylesInput.buttonText}>Submit</Text>  
         </TouchableOpacity>
-      </View>
-    </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#DAEEFE',
-    alignItems: 'center',
-    padding: '5%',
+
+const stylesInput = StyleSheet.create({
+  container1: {
+  flex: 1,
+  width: '100%',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
+  position: 'relative',
+  padding: '5%',
+  backgroundColor: '#DAEEFE',
+  bottom: 50,
   },
+
+/*------------------------------------------------------------------------------------------------------------------*/
+// CARD PREVIEW STYLE
+
+  cardPreviewWrapper: {
+  position: 'relative',
+  top: '10%', 
+  zIndex: 10,
+  width: '100%',
+  alignItems: 'center',
+  },
+
   cardPreview: {
-    display: 'flex',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
     width: '75%',
     aspectRatio: 1.586,
     backgroundColor: '#2b2d42',
-    borderRadius: 16,
-    padding: '4%',
-    justifyContent: 'space-between',
-    zIndex: 1,
+    padding: 0,
   },
-  inputCard: {
-    width: '100%',
+  cardContainer: {
+    width: '75%',
+    aspectRatio: 1.586,
+    overflow: 'hidden',
+    padding: '4%',
+    borderRadius: 16,
+  },
+  card: {
+    width: 300,
+    height: 200,
     alignItems: 'center',
+    justifyContent: 'center',
+    backfaceVisibility: 'hidden',
+  },
+  front: {
+    position: 'absolute',
+  },
+  back: {
+    position: 'absolute',
+  },
+  text: {
+    fontSize: 20,
+    color: 'white',
+  },
+  cardBackground: {
+    flex: 1,
+    alignItems: 'flex-start',
+    paddingLeft: 10,
+    position: 'absolute',
+    resizeMode: 'cover',
+    justifyContent: 'flex-start',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  /*
+  logo: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  hologram: {
+    width: 40,
+    height: 50,
+  },
+  logoBank: {
+    width: 80,
+    height: 40,
+  },
+  */
+
+  cardInfosContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-end',
+  },
+  cardInfos: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    height: '70%',
+  },
+
+/*---------------------------------------------------------------------------------------------------------------------*/
+// CARD INPUT STYLE
+
+  inputCard: {
+    flex: 1,
+    width: '100%',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 'auto',
-    paddingTop: '20%',
-    paddingBottom: '10%',
+    paddingTop: '40%',
+    paddingBottom: '20%',
+    zIndex: 5,
     position: 'relative',
-    top: '-12%',
+  },
+  scrollViewContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
     zIndex: 0,
   },
   cardNumber: {
     width: '100%',
     color: 'white',
     letterSpacing: 2,
+    marginTop: 15,
+    fontWeight: 'bold',
+    paddingBottom: 15,
+    paddingTop: 40,
   },
   cardHolder: {
     color: 'white',
     fontSize: 16,
     textTransform: 'uppercase',
+    fontWeight: 'bold',
+    paddingBottom: 15,
   },
   cardExpiry: {
     color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  cvvCard: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    paddingTop: 130,
+    paddingLeft: 175,
   },
   input: {
     width: '90%',
@@ -141,7 +340,9 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
   },
   row: {
+    display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     marginLeft: '3%',
   },
   picker: {
@@ -176,7 +377,6 @@ const styles = StyleSheet.create({
     width: 80,
     borderRadius: 8,
     borderColor: '#ddd',
-    // Extremely hacky way to align the CVV input
     height: 50,
     marginLeft: "7%",
   },
@@ -195,6 +395,12 @@ const styles = StyleSheet.create({
     width: 80,
     marginRight: 10,
   },
+  spacer: {
+    paddingRight: 40,
+  },
+
 });
 
-export default CreditCardInput;
+
+export default CreditCard;
+
