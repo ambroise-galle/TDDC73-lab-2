@@ -1,4 +1,16 @@
-# Welcome to your Expo app 👋
+# Lab 2
+
+## Task
+
+Create your own version of the application shown below using one of the frameworks from Lab 1.
+Additional instructions:
+
+The logo of the card must change according to the current card number input, see the linked executable version for an example
+Validate user input when appropriate, for example on numeric fields and maximum input length
+Similar to the example, "#"-symbols should be used as placeholders in the card number (note that American Express uses a different card number format)
+The card element and form element of the interface should partly overlap, as in the example
+Implement at least one animation in your user interface (you do not need to include all animations shown in the example)
+User interface 2
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
