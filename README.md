@@ -12,6 +12,13 @@ The card element and form element of the interface should partly overlap, as in 
 Implement at least one animation in your user interface (you do not need to include all animations shown in the example)
 User interface 2
 
+<img src="illustrations\lab2gif.gif" alt="drawing" width="600"/>
+
+## Results
+
+<img src="illustrations\cc.gif" alt="drawing" width="400"/>
+
+
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
 ## Get started
